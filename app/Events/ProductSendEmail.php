@@ -11,7 +11,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Product;
 use Illuminate\Contracts\Queue\ShouldQueue;
-class ProductSendEmail
+class ProductSendEmail implements ShouldQueue 
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
