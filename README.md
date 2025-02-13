@@ -1,5 +1,5 @@
 ##
---notes some features not implemented properly. tight timeline on my Current Work job
+--note some features not implemented properly. tight timeline on my Current Work job
 ##
 -- Question 2: What are the coding principles/practices you can apply in your
 code?
