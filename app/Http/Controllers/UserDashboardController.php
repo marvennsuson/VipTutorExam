@@ -20,4 +20,11 @@ class UserDashboardController extends Controller
         return view('user.dashboard',compact('product'));
     }
 
+    public function show(string $product)
+    {
+        $record =  Product::with('user')->where('id',$product)->first();
+   
+        return view('user.product.show',compact('record'));
+    }
+
 }

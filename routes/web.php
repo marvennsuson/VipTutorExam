@@ -57,6 +57,7 @@ Route::group(['prefix' => 'admin','as' => 'admin.'],function(){
         Route::middleware(['auth','CheckAdmin:user'])->group(function () {
         Route::group(['prefix' => 'dashboard','as' => 'dashboard.'],function(){
             Route::get('index', [UserDashboardController::class, 'index'])->name('index');
+            Route::get('show/{id?}', [UserDashboardController::class, 'show'])->name('show');
         });
         Route::group(['prefix' => 'product','as' => 'product.'],function(){
             Route::get('index', [ProductController::class, 'index'])->name('index');
@@ -70,6 +71,8 @@ Route::group(['prefix' => 'admin','as' => 'admin.'],function(){
     
      
     });
+
+    
     });
 
     Route::group(['prefix' => 'api','as' => 'api.'],function(){

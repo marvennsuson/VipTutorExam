@@ -6,4 +6,4 @@
 <p><strong>Description:</strong> {{ $product->description }}</p>
 <p><strong>Price:</strong> {{ $product->price }}</p>
 
-<p>View the product: <a href="{{ route('user.products.show', $product->id) }}">Link</a> (Adjust route as needed)</p>
+<p>View the product: <a href="{{ route('user.dashboard.show', $product->id) }}">Link</a> (Adjust route as needed)</p>
