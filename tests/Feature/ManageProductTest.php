@@ -14,7 +14,7 @@ class ManageProductTest  extends TestCase
     public function test_can_create_a_product(): void
     {
         $data = [
-            'user_id' => '42',
+            'id' => '42',
             'title' => 'Test Product',
             'description' => 'A test product description',
             'price' => '19.99',
@@ -55,7 +55,8 @@ class ManageProductTest  extends TestCase
         ]);
 
         $updatedData = [
-            'name' => 'new Cat',
+            'title' => 'new Cat',
+            'description' => $faker->text,
             'price' => 29.99,
             'stock' => 12,
         ];
