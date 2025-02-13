@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use App\Events\ProductSendEmail;
 use App\Listeners\SendNewProductEmail;
+use App\Listeners\ProductSendEmailListener;
 class AppServiceProvider extends ServiceProvider
 {
 
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
       
         Event::listen([
             ProductSendEmail::class,
+            ProductSendEmailListener::class,
             SendNewProductEmail::class
         ]);
     }

@@ -8,15 +8,26 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\NewProductEmail;
 use App\Events\ProductSendEmail;
 use Illuminate\Support\Facades\Log;
-class SendNewProductEmail  implements ShouldQueue
+class ProductSendEmailListener  implements ShouldQueue
 {
-    public function handle(ProductSendEmail $event)
+    // /**
+    //  * Create the event listener.
+    //  */
+    // public function __construct()
+    // {
+    //     //
+    // }
+
+    // /**
+    //  * Handle the event.
+    //  */
+    public function handle(ProductSendEmail $event): void
     {
         $product = $event->product;
 
         if ($product) { 
             try {
-                Mail::to('admin@example.com')->send(new NewProductEmail($product));
+                Mail::to('admin@example.com')->send(new  \App\Mail\NewProductEmail($product));
                 Log::info("Email sent for product: " . $product->id);
             } catch (\Exception $e) {
                 Log::error("Error sending email: " . $e->getMessage());
