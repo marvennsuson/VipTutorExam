@@ -56,7 +56,7 @@ class ManageProductTest  extends TestCase
 
         $updatedData = [
             'title' => 'new Cat',
-            'description' => $faker->text,
+            'description' => 'this is my sample Update',
             'price' => 29.99,
             'stock' => 12,
         ];
@@ -67,7 +67,7 @@ class ManageProductTest  extends TestCase
 
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
-            'name' => 'new Cat',
+            'description' => 'this is my sample Update',
             'price' => 29.99,
             'stock' => 12,
         ]); 
@@ -84,7 +84,7 @@ class ManageProductTest  extends TestCase
             'price' => $faker->randomNumber(2)
         ]);
 
-       $data = $product->id;
+ 
         $response = $this->deleteJson(route('test.product.destroy', $product)); 
 
         $response->assertStatus(204); 
