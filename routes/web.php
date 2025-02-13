@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\admin\UserAdminController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductTestController;
 use App\Http\Controllers\Api\ProductController as ApiProductController;
 Route::get('/', function () {
     return view('welcome');
@@ -59,17 +60,6 @@ Route::group(['prefix' => 'admin','as' => 'admin.'],function(){
             Route::get('index', [UserDashboardController::class, 'index'])->name('index');
             Route::get('show/{id?}', [UserDashboardController::class, 'show'])->name('show');
         });
-        Route::group(['prefix' => 'product','as' => 'product.'],function(){
-            Route::get('index', [ProductController::class, 'index'])->name('index');
-            Route::get('create', [ProductController::class, 'create'])->name('create');
-            Route::post('store', [ProductController::class, 'store'])->name('store');
-            Route::get('/show/{id?}', [ProductController::class, 'show'])->name('show');
-            Route::get('/edit/{id?}', [ProductController::class, 'edit'])->name('edit');
-            Route::put('/update/{id?}', [ProductController::class, 'update'])->name('update');
-            Route::get('/delete/{id?}', [ProductController::class, 'destroy'])->name('destroy');
-        });
-    
-     
     });
 
     
@@ -87,10 +77,17 @@ Route::group(['prefix' => 'admin','as' => 'admin.'],function(){
             Route::get('/delete/{id?}', [ApiProductController::class, 'destroy'])->name('destroy');
         });
      
-        //   Route::apiResource('product',ApiProductController::class);
-    
-    
-    
-   
+        //   Route::apiResource('product',ApiProductController::class);   
+    });
+    Route::group(['prefix' => 'test','as' => 'test.'],function(){
+        Route::group(['prefix' => 'product','as' => 'product.'],function(){
+            Route::get('index', [ApiProductController::class, 'index'])->name('index');
+            Route::get('create', [ApiProductController::class, 'create'])->name('create');
+            Route::post('store', [ApiProductController::class, 'store'])->name('store');
+            Route::get('/show/{id?}', [ApiProductController::class, 'show'])->name('show');
+            Route::get('/edit/{id?}', [ApiProductController::class, 'edit'])->name('edit');
+            Route::put('/update/{id?}', [ApiProductController::class, 'update'])->name('update');
+            Route::delete('/delete/{id?}', [ApiProductController::class, 'destroy'])->name('destroy');
+        });
     });
 require __DIR__.'/auth.php';

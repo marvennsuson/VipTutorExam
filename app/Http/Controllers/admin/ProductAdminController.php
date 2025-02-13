@@ -69,23 +69,35 @@ class ProductAdminController extends Controller
 
             DB::beginTransaction();
             try{
-                $file = $request->header_banner;
-                $image_name = rand(10,10000).'_'.time() . '.' . $file->getClientOriginalExtension();
-                $image = ImageUploader::upload($file,'product');
-
-                //Need to setup FTP Connection to work the file upload 
-                // Storage::disk('ftp')->put($image["filename"], file_get_contents($file));
-            $data = [
-                'title' => $request->get('title'),
-                'description' => $request->get('description'),
-                'stock' => $request->get('stock'),
-                'price' => $request->get('price'),
-                'image' => $image["filename"],
-                'path' => $image["path"],
-                'fullpath' => $image["directory"]
-            ];
-            
-          $product = Product::create($data);
+             
+                if ($request->hasFile('header_banner') && $request->file('header_banner')->isValid()) {
+                    $file = $request->header_banner;
+                    $image_name = rand(10,10000).'_'.time() . '.' . $file->getClientOriginalExtension();
+                    $image = ImageUploader::upload($file,'product');
+    
+                    //Need to setup FTP Connection to work the file upload 
+                    // Storage::disk('ftp')->put($image["filename"], file_get_contents($file));
+                    $data = [
+                        'title' => $request->get('title'),
+                        'description' => $request->get('description'),
+                        'stock' => $request->get('stock'),
+                        'price' => $request->get('price'),
+                        'image' => $image["filename"],
+                        'path' => $image["path"],
+                        'fullpath' => $image["directory"]
+                    ];
+     
+                }else{
+                    $data = [
+                        'title' => $request->get('title'),
+                        'description' => $request->get('description'),
+                        'stock' => $request->get('stock'),
+                        'price' => $request->get('price'),
+                    ];
+                
+              
+                }
+                $product = Product::create($data);
                // Not tested 
             // event(new ProductSendEmail($product));
             DB::commit();
@@ -148,20 +160,28 @@ class ProductAdminController extends Controller
 
         DB::beginTransaction();
 		try{
-            $file = $request->header_banner;
-            $image_name = rand(10,10000).'_'.time() . '.' . $file->getClientOriginalExtension();
-            $image = ImageUploader::upload($file,'product');
-                        //Need to setup FTP Connection to work the file upload 
-                // Storage::disk('ftp')->put($image["filename"], file_get_contents($file));
+     
 			$product =  Product::findOrFail($product);
-            
-			$product->title = $request->get('title');
-			$product->description = $request->get('description');
-			$product->stock =  $request->get('stock');
-            $product->price =  $request->get('price');
-            $product->image =  $image["filename"];
-            $product->path =  $image["path"];
-            $product->fullpath =  $image["directory"];
+            if ($request->hasFile('header_banner') && $request->file('header_banner')->isValid()) {
+                $file = $request->header_banner;
+                $image_name = rand(10,10000).'_'.time() . '.' . $file->getClientOriginalExtension();
+                $image = ImageUploader::upload($file,'product');
+                    //Need to setup FTP Connection to work the file upload 
+            // Storage::disk('ftp')->put($image["filename"], file_get_contents($file));
+                $product->title = $request->get('title');
+                $product->description = $request->get('description');
+                $product->stock =  $request->get('stock');
+                $product->price =  $request->get('price');
+                $product->image =  $image["filename"];
+                $product->path =  $image["path"];
+                $product->fullpath =  $image["directory"];
+            }else{
+                $product->title = $request->get('title');
+                $product->description = $request->get('description');
+                $product->stock =  $request->get('stock');
+                $product->price =  $request->get('price');
+            }
+	
 			$product->save();
 			
               // Not tested 

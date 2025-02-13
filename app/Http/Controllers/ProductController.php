@@ -59,21 +59,33 @@ class ProductController extends Controller
          }else{
             try{
                 DB::beginTransaction();
-                $file = $request->header_banner;
-                $image_name = rand(10,10000).'_'.time() . '.' . $file->getClientOriginalExtension();
-                $image = ImageUploader::upload($file,'product');
-                         //Need to setup FTP Connection to work the file upload 
-                // Storage::disk('ftp')->put($image["filename"], file_get_contents($file));
-            $data = [
-                'user_id' => Auth::user()->id,
-                'title' => $request->get('title'),
-                'description' => $request->get('description'),
-                'stock' => $request->get('stock'),
-                'price' => $request->get('price'),
-                'image' => $image["filename"],
-                'path' => $image["path"],
-                'fullpath' => $image["directory"]
-            ];
+                if ($request->hasFile('header_banner') && $request->file('header_banner')->isValid()) {
+                    $file = $request->header_banner;
+                    $image_name = rand(10,10000).'_'.time() . '.' . $file->getClientOriginalExtension();
+                    $image = ImageUploader::upload($file,'product');
+                             //Need to setup FTP Connection to work the file upload 
+                    // Storage::disk('ftp')->put($image["filename"], file_get_contents($file));
+                $data = [
+                    'user_id' => Auth::user()->id,
+                    'title' => $request->get('title'),
+                    'description' => $request->get('description'),
+                    'stock' => $request->get('stock'),
+                    'price' => $request->get('price'),
+                    'image' => $image["filename"],
+                    'path' => $image["path"],
+                    'fullpath' => $image["directory"]
+                ];
+                }else{
+                    $data = [
+                        'user_id' => Auth::user()->id,
+                        'title' => $request->get('title'),
+                        'description' => $request->get('description'),
+                        'stock' => $request->get('stock'),
+                        'price' => $request->get('price')
+               
+                    ];
+                }
+       
             
            $product =  Product::create($data);
             // Not tested 
@@ -140,7 +152,7 @@ class ProductController extends Controller
        
         
 			$product =  Product::findOrFail($product);
-            if ($request->hasFile('header_banner')) {
+            if ($request->hasFile('header_banner') && $request->file('header_banner')->isValid()) {
                 $file = $request->header_banner;
                 $image_name = rand(10,10000).'_'.time() . '.' . $file->getClientOriginalExtension();
                 $image = ImageUploader::upload($file,'product');
@@ -153,15 +165,15 @@ class ProductController extends Controller
                 $product->image =  $image["filename"];
                 $product->path =  $image["path"];
                 $product->fullpath =  $image["directory"];
-                $product->save();
+
             }else{
                 $product->title = $request->get('title');
                 $product->description = $request->get('description');
                 $product->stock =  $request->get('stock');
                 $product->price =  $request->get('price');
-                $product->save();
+              
             }
-	
+            $product->save();
 	       // Not tested 
             // event(new ProductSendEmail($product));
 			DB::commit();

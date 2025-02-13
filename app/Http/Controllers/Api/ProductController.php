@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use  App\Events\ProductSendEmail;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 class ProductController extends Controller
 {
     /**
@@ -41,7 +42,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validator =Validator::make($request->all(),[
-            'header_banner' => 'required|mimes:jpeg,jpg,png,gif|max:100000',
+            'header_banner' => 'mimes:jpeg,jpg,png,gif|max:100000',
             'title' => 'required',
             'description' => 'required',
             'price' => 'numeric',
@@ -53,28 +54,39 @@ class ProductController extends Controller
 
           return response()->json([
             'message' => "Server error : {$validator->errors()}",
-            'status' => 204,
+            'status' => 404,
           ]);
          }else{
             try{
                 DB::beginTransaction();
-                $file = $request->header_banner;
-                $image_name = rand(10,10000).'_'.time() . '.' . $file->getClientOriginalExtension();
-                $image = ImageUploader::upload($file,'product');
-                         //Need to setup FTP Connection to work the file upload 
-                // Storage::disk('ftp')->put($image["filename"], file_get_contents($file));
-            $data = [
-                'user_id' => $request->get('id'),
-                'title' => $request->get('title'),
-                'description' => $request->get('description'),
-                'stock' => $request->get('stock'),
-                'price' => $request->get('price'),
-                'image' => $image["filename"],
-                'path' => $image["path"],
-                'fullpath' => $image["directory"]
-            ];
-            
-         $record = Product::create($data);
+                if ($request->hasFile('header_banner') && $request->file('header_banner')->isValid()) {
+                    $file = $request->header_banner;
+                    $image_name = rand(10,10000).'_'.time() . '.' . $file->getClientOriginalExtension();
+                    $image = ImageUploader::upload($file,'product');
+                             //Need to setup FTP Connection to work the file upload 
+                    // Storage::disk('ftp')->put($image["filename"], file_get_contents($file));
+                $data = [
+                    'user_id' => $request->get('id'),
+                    'title' => $request->get('title'),
+                    'description' => $request->get('description'),
+                    'stock' => $request->get('stock'),
+                    'price' => $request->get('price'),
+                    'image' => $image["filename"],
+                    'path' => $image["path"],
+                    'fullpath' => $image["directory"]
+                ];
+                
+
+                }else{
+                    $data = [
+                        'user_id' => $request->get('id'),
+                        'title' => $request->get('title'),
+                        'description' => $request->get('description'),
+                        'stock' => $request->get('stock'),
+                        'price' => $request->get('price')
+                    ];
+                }
+                $record = Product::create($data);
               // Not tested 
             // event(new ProductSendEmail($product));
             DB::commit();
@@ -87,7 +99,7 @@ class ProductController extends Controller
                 DB::rollback();
                 return response()->json([
                     'message' => "Server error : {$e->getLine()}",
-                    'status' => 204,
+                    'status' => 404,
                   ]);
              
             }
@@ -129,7 +141,7 @@ class ProductController extends Controller
 
             return response()->json([
                 'message' => "Server error : {$validator->errors()}",
-                'status' => 204,
+                'status' => 404,
               ]);
          }else{
 
@@ -139,8 +151,8 @@ class ProductController extends Controller
 		try{
        
         
-			$product =  Product::findOrFail($product);
-            if ($request->hasFile('header_banner')) {
+			// $product =  Product::findOrFail($product);
+            if ($request->hasFile('header_banner') && $request->file('header_banner')->isValid()) {
                 $file = $request->header_banner;
                 $image_name = rand(10,10000).'_'.time() . '.' . $file->getClientOriginalExtension();
                 $image = ImageUploader::upload($file,'product');
@@ -153,16 +165,16 @@ class ProductController extends Controller
                 $product->image =  $image["filename"];
                 $product->path =  $image["path"];
                 $product->fullpath =  $image["directory"];
-                $product->save();
+       
             }else{
                 $product->title = $request->get('title');
                 $product->description = $request->get('description');
                 $product->stock =  $request->get('stock');
                 $product->price =  $request->get('price');
-                $product->save();
+              
             }
 	
-			
+            $product->save();
                // Not tested 
             // event(new ProductSendEmail($product));
 			DB::commit();
@@ -176,7 +188,7 @@ class ProductController extends Controller
 			DB::rollback();
             return response()->json([
                 'message' => "Server error : {$e->getLine()}",
-                'status' => 204,
+                'status' => 404,
               ]);
 
 		}
@@ -189,10 +201,14 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
-
-        return response()->json([
-            'message' => "Successfully Deleted record",
-            'status' => 204
-          ]);
+        if(Route::is('api.product.destroy')){
+            return response()->json([
+                'message' => "Successfully Deleted record",
+                'status' => 204
+              ]);
+        }else{
+            return response()->noContent();
+        }
+      
     }
 }
