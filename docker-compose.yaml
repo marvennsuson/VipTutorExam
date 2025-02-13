@@ -1,0 +1,37 @@
+version: "3"
+networks:
+  application:
+    driver: bridge
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mybackend
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=pgdb
+    networks:
+      - application
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        composer install
+        php artisan migrate
+        php artisan serve --host=0.0.0.0 --port=8000
+  db:
+      image: mysql:8.0 # Or a specific MySQL version
+      environment:
+        MYSQL_ROOT_PASSWORD:   # Change this!
+        MYSQL_DATABASE: examproject # Change this if you like
+        MYSQL_USER: root # Change this if you like
+        MYSQL_PASSWORD:  # Change this!
+      ports:
+        - "3306:3306" # Only needed if you want to connect directly from your host
+      volumes:
+        - db_data:/var/lib/mysql # Persist database data
